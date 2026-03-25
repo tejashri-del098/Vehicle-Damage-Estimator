@@ -52,4 +52,5 @@ Demonstration of building the Mask-RCNN / YOLOv8-seg model tracking mAPs and IoU
 python train.py --epochs 50 --data data.yaml
 ```
 
-*Author: [Your Name / Student ID]*
+*Author: TEJASHRI CHOUDHARY
+
