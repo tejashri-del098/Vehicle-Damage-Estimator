@@ -52,5 +52,13 @@ Demonstration of building the Mask-RCNN / YOLOv8-seg model tracking mAPs and IoU
 python train.py --epochs 50 --data data.yaml
 ```
 
-*Author: TEJASHRI CHOUDHARY
+## 🌐 Live Web Deployment
+- **GitHub Repository**: [tejashri-del098/Vehicle-Damage-Estimator](https://github.com/tejashri-del098/Vehicle-Damage-Estimator)
+- **Live Streamlit App**: [https://vehicle-damage-estimator.streamlit.app](https://vehicle-damage-estimator.streamlit.app) *(Subject to Streamlit Cloud Deployment)*
 
+You can also run the web interface locally using:
+```bash
+streamlit run app.py
+```
+
+*Author: TEJASHRI CHOUDHARY*
