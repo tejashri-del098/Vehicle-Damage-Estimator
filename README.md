@@ -234,7 +234,7 @@ Both are tracked automatically by Ultralytics during training validation.
 
 ## 🔮 Future Improvements
 
-- [ ] Integrate live YOLOv8 inference (replace demo mock with real model weights)
+- [x] Integrate live YOLOv8 inference (replace demo mock with real model weights)
 - [ ] Expand cost matrix to cover more vehicle parts (Hood, Fender, Roof, Headlights)
 - [ ] Add confidence score display from YOLO predictions
 - [ ] Support multi-damage detection in a single image

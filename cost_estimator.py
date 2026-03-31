@@ -37,14 +37,21 @@ class DamageEstimator:
         """
         Returns the formatted report dictionary containing part, severity, and cost range.
         """
-        if part_name not in self.cost_matrix:
-            return None
-            
         severity = self.estimate_severity(mask_area_pixels)
-        min_cost, max_cost = self.cost_matrix[part_name][severity]
+        
+        if part_name not in self.cost_matrix:
+            # Fallback for COCO objects or unknown custom parts
+            default_costs = {
+                "Minor Scratch": (100, 250),
+                "Moderate Dent": (300, 600),
+                "Severe Structural Damage": (700, 1200)
+            }
+            min_cost, max_cost = default_costs[severity]
+        else:
+            min_cost, max_cost = self.cost_matrix[part_name][severity]
         
         return {
-            "Detected Part": part_name,
+            "Detected Part": part_name.title(),
             "Damage Severity": severity,
             "Estimated Repair Cost": f"${min_cost} - ${max_cost}"
         }

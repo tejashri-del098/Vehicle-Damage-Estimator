@@ -13,39 +13,55 @@ def main():
     
     if uploaded_file is not None:
         # Display image
-        st.image(uploaded_file, caption='Uploaded Image', use_column_width=True)
+        st.image(uploaded_file, caption='Uploaded Image', width='stretch')
         
         st.write("---")
         st.subheader("Model Inference")
         
         with st.spinner("Analyzing damage via segmentation masks..."):
-            # Mocking the inference process for speedy web delivery
-            # In a real deployed deep learning model, we would save uploaded_file to disk, 
-            # pass it to YOLOv8, and calculate mask pixels.
+            from ultralytics import YOLO
+            from PIL import Image
+            
+            try:
+                # Load pretrained model since custom isn't fully trained yet
+                model = YOLO("yolov8n-seg.pt")
+                image = Image.open(uploaded_file)
+                results = model(image)
+                
+                result = results[0]
+                damaged_pixels = 0
+                detected_part = "None"
+                
+                if result.masks is not None and len(result.masks) > 0:
+                    # Take the first detected object's mask
+                    mask = result.masks.data[0]
+                    damaged_pixels = int(mask.sum().item())
+                    cls = int(result.boxes.cls[0].item())
+                    detected_part = model.names[cls]
+            except Exception as e:
+                st.error(f"Error during YOLO inference: {e}")
+                return
             
             estimator = DamageEstimator()
             
-            # Since this is a demo, we mock the surface area based on file size or randomly 
-            # to simulate the pipeline.
-            # We'll default to the standard demonstration values!
-            damaged_pixels = 15000 
-            detected_part = "Bumper"
-            
-            report = estimator.get_estimate(detected_part, damaged_pixels)
-            
-            # Display Report
-            if report:
-                st.success("Analysis Complete!")
-                col1, col2, col3 = st.columns(3)
+            if damaged_pixels > 0:
+                report = estimator.get_estimate(detected_part, damaged_pixels)
                 
-                with col1:
-                    st.metric("Detected Part", report["Detected Part"])
-                with col2:
-                    st.metric("Severity", report["Damage Severity"])
-                with col3:
-                    st.metric("Estimated Cost", report["Estimated Repair Cost"])
+                # Display Report
+                if report:
+                    st.success("Analysis Complete!")
+                    col1, col2, col3 = st.columns(3)
                     
-                st.info(f"Technical Info: Detected Part Area refers to {damaged_pixels} pixels via Instance Segmentation MASK.")
+                    with col1:
+                        st.metric("Detected Part", report["Detected Part"])
+                    with col2:
+                        st.metric("Severity", report["Damage Severity"])
+                    with col3:
+                        st.metric("Estimated Cost", report["Estimated Repair Cost"])
+                        
+                    st.info(f"Technical Info: Detected '{detected_part}' Area refers to {damaged_pixels} pixels via Instance Segmentation MASK.")
+            else:
+                st.warning("No significant objects or damage masks detected in the image.")
 
 if __name__ == "__main__":
     main()
